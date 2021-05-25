@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class Vocabulary {
-    private int vocId;
+    private Long vocId;
     private String domestic;
     private String foreign;
     private String exerciseDate;
