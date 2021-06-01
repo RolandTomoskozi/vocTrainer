@@ -1,7 +1,10 @@
 package at.java.voctrainer.dao;
 
 import at.java.voctrainer.model.VocState;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -10,9 +13,12 @@ import javax.persistence.*;
  * Created on 25.05.2021
  */
 @Entity
-@Table(name = "Vocablurary")
+@Table(name = "Vocabulary")
 @Data
-public class VocabluraryDto {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class VocabularyDto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;

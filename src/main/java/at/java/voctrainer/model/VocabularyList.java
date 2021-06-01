@@ -5,14 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Vocabulary {
-    private Long vocId;
-    private String domestic;
-    private String foreign;
-    private String exerciseDate;
-    private VocState state;
+public class VocabularyList {
+    private List<Vocabulary> vocabularies;
 }

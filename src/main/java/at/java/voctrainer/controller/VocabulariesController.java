@@ -1,19 +1,23 @@
 package at.java.voctrainer.controller;
 
-import at.java.voctrainer.dao.VocabluraryDto;
+
+import at.java.voctrainer.dao.VocabularyDto;
 import at.java.voctrainer.expections.BadRequestException;
 import at.java.voctrainer.model.VocState;
 import at.java.voctrainer.model.Vocabulary;
 import at.java.voctrainer.model.VocabularyCreate;
+import at.java.voctrainer.model.VocabularyList;
 import at.java.voctrainer.repository.VocabluraryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -25,7 +29,7 @@ public class VocabulariesController {
     @Autowired
     private VocabluraryRepository vocabluraryRepository;
 
-    @PostMapping("/vocabularies")
+    @PostMapping(value = "/vocabularies")
     public Vocabulary createVocabulary(@RequestBody VocabularyCreate input) {
         //System.out.println("vocId: " + vocId);
         System.out.println("input: " + input);
@@ -42,13 +46,13 @@ public class VocabulariesController {
             throw new BadRequestException();
         }
 
-        VocabluraryDto vocabluraryDto = new VocabluraryDto();
+        VocabularyDto vocabluraryDto = new VocabularyDto();
         vocabluraryDto.setDomesticText(input.getDomestic());
         vocabluraryDto.setForeignText(input.getForeign());
         vocabluraryDto.setState(VocState.DAILY);
         vocabluraryDto.setExerciseDate(expectedDate);
 
-        VocabluraryDto savedDto = vocabluraryRepository.save(vocabluraryDto);
+        VocabularyDto savedDto = vocabluraryRepository.save(vocabluraryDto);
 
         return Vocabulary.builder()
                 .vocId(savedDto.getId())
@@ -57,5 +61,27 @@ public class VocabulariesController {
                 .state(VocState.DAILY)
                 .exerciseDate(expectedDate)
                 .build();
+    }
+
+    @GetMapping(value = "/vocabularies")
+    public VocabularyList getVocabulary(){
+        List<VocabularyDto> allVocabulary = vocabluraryRepository.findAll();
+
+        VocabularyList vocabularyList = new VocabularyList();
+        vocabularyList.setVocabularies(new ArrayList<>());
+
+        for (VocabularyDto voc : allVocabulary) {
+          Vocabulary vocabulary = Vocabulary.builder()
+                  .vocId(voc.getId())
+                  .domestic(voc.getDomesticText())
+                  .exerciseDate(voc.getExerciseDate())
+                  .foreign(voc.getForeignText())
+                  .state(voc.getState())
+                  .build();
+
+          vocabularyList.getVocabularies().add(vocabulary);
+        }
+
+        return vocabularyList;
     }
 }

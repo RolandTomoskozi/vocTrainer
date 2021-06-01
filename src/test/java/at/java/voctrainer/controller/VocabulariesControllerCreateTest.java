@@ -1,6 +1,6 @@
 package at.java.voctrainer.controller;
 
-import at.java.voctrainer.dao.VocabluraryDto;
+import at.java.voctrainer.dao.VocabularyDto;
 import at.java.voctrainer.model.VocState;
 import at.java.voctrainer.model.Vocabulary;
 import at.java.voctrainer.model.VocabularyCreate;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Created on 20.05.2021
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class VocabulariesControllerTest {
+class VocabulariesControllerCreateTest {
     @LocalServerPort
     private int port;
 
@@ -59,13 +59,13 @@ class VocabulariesControllerTest {
         ResponseEntity<Vocabulary> ret = restTemplate.exchange(requestEntity, Vocabulary.class);
         ResponseEntity<Vocabulary> ret2 = restTemplate.exchange(requestEntity, Vocabulary.class);
 
-        List<VocabluraryDto> vocList = vocabluraryRepository.findAll();
+        List<VocabularyDto> vocList = vocabluraryRepository.findAll();
         assertThat(vocList.size()).isEqualTo(2);
 
-        Optional<VocabluraryDto> byId = vocabluraryRepository.findById(ret.getBody().getVocId());
+        Optional<VocabularyDto> byId = vocabluraryRepository.findById(ret.getBody().getVocId());
         assertThat(byId.isPresent()).isTrue();
 
-        Optional<VocabluraryDto> byId2 = vocabluraryRepository.findById(ret2.getBody().getVocId());
+        Optional<VocabularyDto> byId2 = vocabluraryRepository.findById(ret2.getBody().getVocId());
         assertThat(byId2.isPresent()).isTrue();
 
         // check if ids are unique
@@ -137,7 +137,7 @@ class VocabulariesControllerTest {
     private <T> RequestEntity<T> executeCallToRestTemplate(RequestEntity<T> requestEntity, T input) {
         RequestEntity<T> ret = null;
         try {
-            ret = RequestEntity.post(new URL("http://localhost:" + port + "/vocabularies/1")
+            ret = RequestEntity.post(new URL("http://localhost:" + port + "/vocabularies/")
                     .toURI()).contentType(MediaType.APPLICATION_JSON).body(input);
         } catch (URISyntaxException | MalformedURLException e) {
             e.printStackTrace();
