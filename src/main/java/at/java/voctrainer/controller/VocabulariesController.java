@@ -4,6 +4,7 @@ package at.java.voctrainer.controller;
 import at.java.voctrainer.dao.VocabularyDto;
 import at.java.voctrainer.expections.BadRequestException;
 import at.java.voctrainer.expections.NotFoundException;
+import at.java.voctrainer.mapper.VocDtoMapper;
 import at.java.voctrainer.model.VocState;
 import at.java.voctrainer.model.Vocabulary;
 import at.java.voctrainer.model.VocabularyCreate;
@@ -66,14 +67,7 @@ public class VocabulariesController {
         vocabularyList.setVocabularies(new ArrayList<>());
 
         for (VocabularyDto voc : allVocabulary) {
-            Vocabulary vocabulary = Vocabulary.builder()
-                    .vocId(voc.getId())
-                    .domestic(voc.getDomesticText())
-                    .exerciseDate(voc.getExerciseDate())
-                    .foreign(voc.getForeignText())
-                    .state(voc.getState())
-                    .build();
-
+            Vocabulary vocabulary = VocDtoMapper.INSTANCE.dtoToModel(voc);
             vocabularyList.getVocabularies().add(vocabulary);
         }
 
@@ -87,13 +81,7 @@ public class VocabulariesController {
         Vocabulary vocabulary;
 
         if (vocById.isPresent()) {
-            vocabulary = Vocabulary.builder()
-                    .vocId(vocById.get().getId())
-                    .domestic(vocById.get().getDomesticText())
-                    .exerciseDate(vocById.get().getExerciseDate())
-                    .foreign(vocById.get().getForeignText())
-                    .state(vocById.get().getState())
-                    .build();
+            vocabulary = VocDtoMapper.INSTANCE.dtoToModel(vocById.get());
         } else {
             throw new NotFoundException();
         }
