@@ -3,22 +3,17 @@ package at.java.voctrainer.controller;
 
 import at.java.voctrainer.dao.VocabularyDto;
 import at.java.voctrainer.expections.BadRequestException;
+import at.java.voctrainer.expections.NotFoundException;
 import at.java.voctrainer.model.VocState;
 import at.java.voctrainer.model.Vocabulary;
 import at.java.voctrainer.model.VocabularyCreate;
 import at.java.voctrainer.model.VocabularyList;
 import at.java.voctrainer.repository.VocabluraryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Roland Tömösközi (roland.toemoeskoezi@outlook.com)
@@ -64,24 +59,45 @@ public class VocabulariesController {
     }
 
     @GetMapping(value = "/vocabularies")
-    public VocabularyList getVocabulary(){
+    public VocabularyList getVocabulary() {
         List<VocabularyDto> allVocabulary = vocabluraryRepository.findAll();
 
         VocabularyList vocabularyList = new VocabularyList();
         vocabularyList.setVocabularies(new ArrayList<>());
 
         for (VocabularyDto voc : allVocabulary) {
-          Vocabulary vocabulary = Vocabulary.builder()
-                  .vocId(voc.getId())
-                  .domestic(voc.getDomesticText())
-                  .exerciseDate(voc.getExerciseDate())
-                  .foreign(voc.getForeignText())
-                  .state(voc.getState())
-                  .build();
+            Vocabulary vocabulary = Vocabulary.builder()
+                    .vocId(voc.getId())
+                    .domestic(voc.getDomesticText())
+                    .exerciseDate(voc.getExerciseDate())
+                    .foreign(voc.getForeignText())
+                    .state(voc.getState())
+                    .build();
 
-          vocabularyList.getVocabularies().add(vocabulary);
+            vocabularyList.getVocabularies().add(vocabulary);
         }
 
         return vocabularyList;
+    }
+
+    @GetMapping(value = "/vocabularies/{id}")
+    public Vocabulary getVocabularyById(@PathVariable Long id) throws Exception {
+        Optional<VocabularyDto> vocById = vocabluraryRepository.findById(id);
+
+        Vocabulary vocabulary;
+
+        if (vocById.isPresent()) {
+            vocabulary = Vocabulary.builder()
+                    .vocId(vocById.get().getId())
+                    .domestic(vocById.get().getDomesticText())
+                    .exerciseDate(vocById.get().getExerciseDate())
+                    .foreign(vocById.get().getForeignText())
+                    .state(vocById.get().getState())
+                    .build();
+        } else {
+            throw new NotFoundException();
+        }
+
+        return vocabulary;
     }
 }
