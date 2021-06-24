@@ -90,7 +90,7 @@ public class VocabulariesController {
     }
 
     @PutMapping(value = "/vocabularies/{id}")
-    public Vocabulary getVocabularyById(@PathVariable Long id, @RequestBody VocabularyCreate input) throws Exception {
+    public Vocabulary updateVocabularyById(@PathVariable Long id, @RequestBody VocabularyCreate input) throws Exception {
         Optional<VocabularyDto> vocById = vocabluraryRepository.findById(id);
 
         Vocabulary vocabularyModel;
@@ -108,4 +108,14 @@ public class VocabulariesController {
         return vocabularyModel;
     }
 
+    @DeleteMapping(value = "/vocabularies/{id}")
+    public void deleteVocabularyById(@PathVariable Long id) throws Exception {
+        Optional<VocabularyDto> vocById = vocabluraryRepository.findById(id);
+
+        if (vocById.isPresent()) {
+            vocabluraryRepository.delete(vocById.get());
+        } else {
+            throw new NotFoundException();
+        }
+    }
 }
