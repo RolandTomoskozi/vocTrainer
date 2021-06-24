@@ -11,6 +11,7 @@ import at.java.voctrainer.model.VocabularyCreate;
 import at.java.voctrainer.model.VocabularyList;
 import at.java.voctrainer.repository.VocabluraryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -27,9 +28,6 @@ public class VocabulariesController {
 
     @PostMapping(value = "/vocabularies")
     public Vocabulary createVocabulary(@RequestBody VocabularyCreate input) {
-        //System.out.println("vocId: " + vocId);
-        System.out.println("input: " + input);
-
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DATE, 1);  // number of days to add
@@ -109,12 +107,9 @@ public class VocabulariesController {
     }
 
     @DeleteMapping(value = "/vocabularies/{id}")
+    @Transactional
     public void deleteVocabularyById(@PathVariable Long id) throws Exception {
-        Optional<VocabularyDto> vocById = vocabluraryRepository.findById(id);
-
-        if (vocById.isPresent()) {
-            vocabluraryRepository.delete(vocById.get());
-        } else {
+        if (vocabluraryRepository.deleteByIdWithCount(id) < 1) {
             throw new NotFoundException();
         }
     }
