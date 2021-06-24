@@ -11,11 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,18 +24,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class VocabulariesControllerUpdateTest {
+    int afterRun;
     @LocalServerPort
     private int port;
-
     @Autowired
     private TestRestTemplate restTemplate;
-
     @Autowired
     private VocabluraryRepository vocabluraryRepository;
-
     private int beforeRun;
     private long voc01Id;
-    int afterRun;
     private VocabularyDto voc01;
     private VocabularyDto voc02;
 
@@ -86,17 +82,15 @@ class VocabulariesControllerUpdateTest {
     }
 
     private ResponseEntity<Vocabulary> executeCallToRestTemplateSingleVocabularies(long vocId, VocabularyCreate body) {
-        ResponseEntity<Vocabulary> ret = null;
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String baseUrl = "http://localhost:" + port + "/vocabularies/" + vocId;
-            URI uri = new URI(baseUrl);
+        ResponseEntity<Vocabulary> ret;
+        RestTemplate restTemplate = new RestTemplate();
+        String baseUrl = "http://localhost:" + port + "/vocabularies/" + vocId;
+        RequestEntity<VocabularyCreate> request = RequestEntity
+                .put(baseUrl)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(body);
 
-            ret = restTemplate.postForEntity(uri, body, Vocabulary.class);
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        ret = restTemplate.exchange(request, Vocabulary.class);
         return ret;
     }
 }

@@ -88,4 +88,24 @@ public class VocabulariesController {
 
         return vocabulary;
     }
+
+    @PutMapping(value = "/vocabularies/{id}")
+    public Vocabulary getVocabularyById(@PathVariable Long id, @RequestBody VocabularyCreate input) throws Exception {
+        Optional<VocabularyDto> vocById = vocabluraryRepository.findById(id);
+
+        Vocabulary vocabularyModel;
+
+        if (vocById.isPresent()) {
+            vocabularyModel = VocDtoMapper.INSTANCE.dtoToModel(vocById.get());
+            vocabularyModel.setDomestic(input.getDomestic());
+            vocabularyModel.setForeign(input.getForeign());
+            VocabularyDto modVocabularyDto = VocDtoMapper.INSTANCE.modelToDto(vocabularyModel);
+            vocabluraryRepository.save(modVocabularyDto);
+        } else {
+            throw new NotFoundException();
+        }
+
+        return vocabularyModel;
+    }
+
 }
