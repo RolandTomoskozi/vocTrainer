@@ -14,9 +14,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * @author Roland Tömösközi (roland.toemoeskoezi@outlook.com)
@@ -24,13 +26,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class VocabulariesControllerUpdateTest {
-    int afterRun;
     @LocalServerPort
     private int port;
-    @Autowired
-    private TestRestTemplate restTemplate;
+
     @Autowired
     private VocabluraryRepository vocabluraryRepository;
+
+    int afterRun;
     private int beforeRun;
     private long voc01Id;
     private VocabularyDto voc01;
@@ -92,5 +94,21 @@ class VocabulariesControllerUpdateTest {
 
         ret = restTemplate.exchange(request, Vocabulary.class);
         return ret;
+    }
+
+    @Test
+    public void given_nonExistingVocId_when_updateVocabulary_then_returnHttp404() {
+        String testForeignUpdated = "testForeignUpdated";
+        String testDomesticUpdated = "testDomesticUpdated";
+
+        VocabularyCreate vocabularyCreate = VocabularyCreate.builder()
+                .foreign(testForeignUpdated)
+                .domestic(testDomesticUpdated)
+                .build();
+
+        assertThatExceptionOfType(HttpClientErrorException.class)
+                .isThrownBy(() -> {
+                    executeCallToRestTemplateSingleVocabularies(99999L, vocabularyCreate);
+                });
     }
 }
